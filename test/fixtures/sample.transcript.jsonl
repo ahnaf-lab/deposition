@@ -1,0 +1,6 @@
+{"role": "user", "content": [{"type": "text", "text": "Please fix the null check bug."}]}
+{"role": "assistant", "content": [{"type": "text", "text": "I looked at the code and fixed the null check bug in src/app.js."}, {"type": "tool_use", "id": "1", "name": "Edit", "input": {"file_path": "src/app.js", "old_string": "if (x)", "new_string": "if (x != null)"}}]}
+{"role": "assistant", "content": [{"type": "text", "text": "I also added a new helper in src/utils.js and updated README.md for clarity."}, {"type": "tool_use", "id": "2", "name": "Write", "input": {"file_path": "src/utils.js", "content": "export function helper() {}"}}]}
+{"role": "tool", "content": [{"type": "tool_result", "tool_use_id": "2", "content": "ok"}]}
+not valid json at all
+{"role": "assistant", "content": [{"type": "text", "text": "Everything looks good now."}]}

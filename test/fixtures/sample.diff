@@ -1,0 +1,28 @@
+diff --git a/src/app.js b/src/app.js
+index e69de29..b6fc4c6 100644
+--- a/src/app.js
++++ b/src/app.js
+@@ -1,4 +1,4 @@
+ function run(x) {
+-  if (x) {
++  if (x != null) {
+     return x.value;
+   }
+ }
+diff --git a/src/utils.js b/src/utils.js
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/src/utils.js
+@@ -0,0 +1,3 @@
++export function helper() {
++  return true;
++}
+diff --git a/src/old.js b/src/old.js
+deleted file mode 100644
+index 2222222..0000000
+--- a/src/old.js
++++ /dev/null
+@@ -1,2 +0,0 @@
+-export function old() {}
+-
