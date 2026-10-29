@@ -11,10 +11,11 @@ codebase, as opposed to what it said it did.
 ## Status
 
 This project is built autonomously, one milestone at a time, with each change
-gated on passing automated tests. The current milestone covers claim
-extraction only: parsing a transcript into claims about which files were
-touched or fixed, and parsing a diff into its actual changed hunks.
-Cross-examination and document generation are not implemented yet.
+gated on passing automated tests. So far: parsing a transcript into claims
+about which files were touched or fixed, parsing a diff into its actual
+changed hunks, and a first set of deterministic objection rules that flag
+claimed-but-untouched files and unsupported "tests pass" claims. Full
+cross-examination and document generation are not implemented yet.
 
 ## Install
 
@@ -45,7 +46,7 @@ node bin/deposition.js <transcript-file> <diff-file> [--out <output-file>]
 
 - `--out <file>` — write the JSON result to a file instead of stdout.
 
-The CLI prints a JSON object with two top-level keys:
+The CLI prints a JSON object with three top-level keys:
 
 - `claims` — every claim found in the transcript, either a `tool_call` claim
   (a file-editing tool invocation, e.g. `Edit`/`Write`) or a `narration` claim
@@ -54,6 +55,14 @@ The CLI prints a JSON object with two top-level keys:
 - `diff` — the parsed diff: one entry per file with its status
   (`added`/`modified`/`deleted`/`renamed`) and its hunks, each hunk broken
   down into added, removed, and context lines.
+- `objections` — deterministic rule violations found by comparing `claims`
+  against `diff`:
+  - `claimed-untouched-file` — the transcript claims a file was edited,
+    written, or deleted (via a tool call or narration with a mutating verb),
+    but the diff shows no change to that file at all.
+  - `unsupported-tests-pass-claim` — the assistant's narration asserts the
+    tests pass, but no test-running command (`npm test`, `pytest`, `go test`,
+    etc.) appears anywhere in the transcript's tool calls.
 
 Example:
 

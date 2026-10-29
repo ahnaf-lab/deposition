@@ -4,3 +4,8 @@ export {
   extractClaims,
   extractNarrationClaims,
 } from "./transcriptParser.js";
+export {
+  findUntouchedFileClaims,
+  findUnsupportedTestsPassClaims,
+  generateObjections,
+} from "./objections.js";

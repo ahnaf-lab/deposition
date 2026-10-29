@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
-import { parseDiff, parseTranscript, extractClaims } from "../src/index.js";
+import {
+  parseDiff,
+  parseTranscript,
+  extractClaims,
+  generateObjections,
+} from "../src/index.js";
 
 function usage() {
   return [
@@ -62,8 +67,9 @@ export function run(argv) {
   const events = parseTranscript(transcriptText);
   const claims = extractClaims(events);
   const diff = parseDiff(diffText);
+  const objections = generateObjections({ events, claims, diff });
 
-  const result = { claims, diff };
+  const result = { claims, diff, objections };
   return { ok: true, result, out: args.out };
 }
 
