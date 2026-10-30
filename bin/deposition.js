@@ -6,6 +6,7 @@ import {
   extractClaims,
   generateObjections,
   renderDeposition,
+  tallyVerdicts,
 } from "../src/index.js";
 
 function usage() {
@@ -76,7 +77,11 @@ export function run(argv) {
   const objections = generateObjections({ events, claims, diff });
 
   const output = args.json
-    ? `${JSON.stringify({ claims, diff, objections }, null, 2)}\n`
+    ? `${JSON.stringify(
+        { claims, diff, objections, verdict: tallyVerdicts(claims, objections) },
+        null,
+        2,
+      )}\n`
     : renderDeposition({ claims, diff, objections });
 
   return { ok: true, output, out: args.out };

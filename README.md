@@ -14,10 +14,10 @@ This project is built autonomously, one milestone at a time, with each change
 gated on passing automated tests. So far: parsing a transcript into claims
 about which files were touched or fixed, parsing a diff into its actual
 changed hunks, a first set of deterministic objection rules that flag
-claimed-but-untouched files and unsupported "tests pass" claims, and a
+claimed-but-untouched files and unsupported "tests pass" claims, a
 deposition template that renders the claims, diff, and objections as a
-courtroom-style Q&A transcript with exhibits. Further objection rules are not
-implemented yet.
+courtroom-style Q&A transcript with exhibits, and a closing verdict summary
+tallying how many claims were sustained versus overruled.
 
 ## Install
 
@@ -68,6 +68,9 @@ By default the CLI renders a courtroom-deposition-style Q&A transcript:
   - `unsupported-tests-pass-claim` — the assistant's narration asserts the
     tests pass, but no test-running command (`npm test`, `pytest`, `go test`,
     etc.) appears anywhere in the transcript's tool calls.
+- A closing `VERDICT SUMMARY` tallying how many claims were sustained (the
+  diff contradicts them) versus overruled (the diff doesn't contradict
+  them), plus any claim-independent objections sustained on top of that.
 
 Example:
 

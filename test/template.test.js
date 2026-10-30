@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { parseDiff } from "../src/diffParser.js";
 import { parseTranscript, extractClaims } from "../src/transcriptParser.js";
 import { generateObjections } from "../src/objections.js";
-import { buildExhibits, renderDeposition } from "../src/template.js";
+import { buildExhibits, renderDeposition, tallyVerdicts } from "../src/template.js";
 
 const sampleDiff = [
   "diff --git a/src/app.js b/src/app.js",
@@ -126,4 +126,78 @@ test("renderDeposition produces no EXAMINATION entries or exhibits when there ar
   assert.match(doc, /DEPOSITION OF THE AGENT/);
   assert.doesNotMatch(doc, /EXHIBIT/);
   assert.doesNotMatch(doc, /GENERAL OBJECTIONS/);
+  assert.match(doc, /VERDICT SUMMARY/);
+  assert.match(doc, /Claims examined: 0/);
+  assert.match(doc, /Sustained: 0/);
+  assert.match(doc, /Overruled: 0/);
+});
+
+test("tallyVerdicts counts a claim the diff contradicts as sustained", () => {
+  const events = parseTranscript(
+    JSON.stringify({
+      role: "assistant",
+      content: [{ type: "text", text: "I also updated README.md for clarity." }],
+    }),
+  );
+  const claims = extractClaims(events);
+  const diff = parseDiff("");
+  const objections = generateObjections({ events, claims, diff });
+
+  const tally = tallyVerdicts(claims, objections);
+
+  assert.equal(tally.claimsExamined, 1);
+  assert.equal(tally.sustainedClaims, 1);
+  assert.equal(tally.overruledClaims, 0);
+  assert.equal(tally.totalSustained, 1);
+});
+
+test("tallyVerdicts counts a claim the diff supports as overruled", () => {
+  const events = parseTranscript(
+    JSON.stringify({
+      role: "assistant",
+      content: [
+        {
+          type: "tool_use",
+          name: "Edit",
+          input: { file_path: "src/app.js", old_string: "old", new_string: "new" },
+        },
+      ],
+    }),
+  );
+  const claims = extractClaims(events);
+  const diff = parseDiff(sampleDiff);
+  const objections = generateObjections({ events, claims, diff });
+
+  const tally = tallyVerdicts(claims, objections);
+
+  assert.equal(tally.claimsExamined, 1);
+  assert.equal(tally.sustainedClaims, 0);
+  assert.equal(tally.overruledClaims, 1);
+  assert.equal(tally.totalSustained, 0);
+});
+
+test("tallyVerdicts counts a claim-independent objection as an additional sustained objection", () => {
+  const events = parseTranscript(
+    JSON.stringify({
+      role: "assistant",
+      content: [{ type: "text", text: "All tests pass now." }],
+    }),
+  );
+  const claims = extractClaims(events);
+  const diff = parseDiff(sampleDiff);
+  const objections = generateObjections({ events, claims, diff });
+
+  const tally = tallyVerdicts(claims, objections);
+
+  assert.equal(tally.claimsExamined, 0);
+  assert.equal(tally.generalObjections, 1);
+  assert.equal(tally.totalSustained, 1);
+
+  const doc = renderDeposition({ claims, diff, objections });
+  const verdictIndex = doc.indexOf("VERDICT SUMMARY");
+  const generalIndex = doc.indexOf("GENERAL OBJECTIONS");
+
+  assert.ok(generalIndex > 0);
+  assert.ok(verdictIndex > generalIndex);
+  assert.match(doc, /Additional objections sustained \(not tied to a specific claim\): 1/);
 });

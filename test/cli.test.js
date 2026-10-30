@@ -45,4 +45,16 @@ test("CLI --json outputs claims and diff as JSON for valid input", async () => {
   assert.ok(parsed.claims.length > 0);
   assert.ok(Array.isArray(parsed.diff.files));
   assert.equal(parsed.diff.files.length, 3);
+  assert.equal(parsed.verdict.claimsExamined, parsed.claims.length);
+});
+
+test("CLI renders a VERDICT SUMMARY at the end of the deposition transcript", async () => {
+  const { stdout } = await execFileAsync("node", [
+    binPath,
+    transcriptPath,
+    diffPath,
+  ]);
+
+  assert.match(stdout, /VERDICT SUMMARY/);
+  assert.match(stdout, /Claims examined: \d+/);
 });

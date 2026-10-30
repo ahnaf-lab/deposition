@@ -117,12 +117,68 @@ function renderGeneralObjections(objections, claims) {
   return lines.join("\n");
 }
 
+function claimHasObjection(claim, objections) {
+  return objections.some((objection) => objectionMatchesClaim(objection, claim));
+}
+
+/**
+ * Tally how claims and objections resolve: a claim the diff contradicts is
+ * "sustained" (counsel's challenge holds up), a claim the diff doesn't
+ * contradict is "overruled" (the testimony stands unchallenged). Objections
+ * that aren't tied to any one claim (e.g. an unsupported "tests pass"
+ * assertion) are counted separately, since by construction every rule-based
+ * objection is already a confirmed discrepancy.
+ */
+export function tallyVerdicts(claims, objections) {
+  let sustainedClaims = 0;
+  let overruledClaims = 0;
+
+  for (const claim of claims) {
+    if (claimHasObjection(claim, objections)) {
+      sustainedClaims += 1;
+    } else {
+      overruledClaims += 1;
+    }
+  }
+
+  const generalObjections = objections.filter(
+    (objection) => !claims.some((claim) => objectionMatchesClaim(objection, claim)),
+  ).length;
+
+  return {
+    claimsExamined: claims.length,
+    sustainedClaims,
+    overruledClaims,
+    generalObjections,
+    totalSustained: sustainedClaims + generalObjections,
+  };
+}
+
+function renderVerdictSummary(claims, objections) {
+  const tally = tallyVerdicts(claims, objections);
+  const lines = [
+    "VERDICT SUMMARY",
+    "-".repeat(15),
+    `Claims examined: ${tally.claimsExamined}`,
+    `Sustained: ${tally.sustainedClaims} (claims the diff contradicts)`,
+    `Overruled: ${tally.overruledClaims} (claims the diff does not contradict)`,
+  ];
+  if (tally.generalObjections > 0) {
+    lines.push(
+      `Additional objections sustained (not tied to a specific claim): ${tally.generalObjections}`,
+    );
+  }
+  lines.push(`Total objections sustained: ${tally.totalSustained}`);
+  return lines.join("\n");
+}
+
 /**
  * Render a full deposition document: one numbered Q&A pair per claim found
  * in the transcript, an EXHIBIT block per file the diff actually changed,
- * and objections placed directly beneath the claim they contradict (or
- * under a trailing "GENERAL OBJECTIONS" section when they aren't tied to a
- * specific claim, e.g. an unsupported "tests pass" assertion).
+ * objections placed directly beneath the claim they contradict (or under a
+ * trailing "GENERAL OBJECTIONS" section when they aren't tied to a specific
+ * claim, e.g. an unsupported "tests pass" assertion), and a closing
+ * "VERDICT SUMMARY" tallying how many claims were sustained vs. overruled.
  */
 export function renderDeposition({ claims, diff, objections }) {
   const exhibits = buildExhibits(diff);
@@ -155,6 +211,9 @@ export function renderDeposition({ claims, diff, objections }) {
     sections.push("");
     sections.push(general);
   }
+
+  sections.push("");
+  sections.push(renderVerdictSummary(claims, objections));
 
   return `${sections.join("\n")}\n`;
 }
