@@ -5,27 +5,33 @@ import {
   parseTranscript,
   extractClaims,
   generateObjections,
+  renderDeposition,
 } from "../src/index.js";
 
 function usage() {
   return [
-    "Usage: deposition <transcript-file> <diff-file> [--out <output-file>]",
+    "Usage: deposition <transcript-file> <diff-file> [--out <output-file>] [--json]",
     "",
     "  <transcript-file>  JSON Lines agent session transcript",
     "  <diff-file>        unified diff text, e.g. the output of `git diff`",
-    "  --out <file>       write JSON result to a file instead of stdout",
+    "  --out <file>       write the result to a file instead of stdout",
+    "  --json             print the raw claims/diff/objections JSON instead",
+    "                     of the deposition Q&A transcript",
   ].join("\n");
 }
 
 function parseArgs(argv) {
   const positional = [];
   let out = null;
+  let json = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--out") {
       out = argv[i + 1] ?? null;
       i += 1;
+    } else if (arg === "--json") {
+      json = true;
     } else if (arg === "--help" || arg === "-h") {
       return { help: true };
     } else {
@@ -33,7 +39,7 @@ function parseArgs(argv) {
     }
   }
 
-  return { transcriptPath: positional[0], diffPath: positional[1], out };
+  return { transcriptPath: positional[0], diffPath: positional[1], out, json };
 }
 
 export function run(argv) {
@@ -69,8 +75,11 @@ export function run(argv) {
   const diff = parseDiff(diffText);
   const objections = generateObjections({ events, claims, diff });
 
-  const result = { claims, diff, objections };
-  return { ok: true, result, out: args.out };
+  const output = args.json
+    ? `${JSON.stringify({ claims, diff, objections }, null, 2)}\n`
+    : renderDeposition({ claims, diff, objections });
+
+  return { ok: true, output, out: args.out };
 }
 
 function main() {
@@ -82,12 +91,10 @@ function main() {
     return;
   }
 
-  const json = JSON.stringify(outcome.result, null, 2);
-
   if (outcome.out) {
-    writeFileSync(outcome.out, json + "\n", "utf8");
+    writeFileSync(outcome.out, outcome.output, "utf8");
   } else {
-    console.log(json);
+    process.stdout.write(outcome.output);
   }
 }
 

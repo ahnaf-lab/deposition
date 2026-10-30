@@ -9,3 +9,4 @@ export {
   findUnsupportedTestsPassClaims,
   generateObjections,
 } from "./objections.js";
+export { renderDeposition, buildExhibits } from "./template.js";

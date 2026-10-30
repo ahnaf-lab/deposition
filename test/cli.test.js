@@ -20,11 +20,24 @@ test("CLI prints usage and exits non-zero when args are missing", async () => {
   await assert.rejects(execFileAsync("node", [binPath]));
 });
 
-test("CLI outputs JSON with claims and diff for valid input", async () => {
+test("CLI renders a deposition Q&A transcript by default", async () => {
   const { stdout } = await execFileAsync("node", [
     binPath,
     transcriptPath,
     diffPath,
+  ]);
+
+  assert.match(stdout, /DEPOSITION OF THE AGENT/);
+  assert.match(stdout, /Q1\. Counsel:/);
+  assert.match(stdout, /EXHIBIT A/);
+});
+
+test("CLI --json outputs claims and diff as JSON for valid input", async () => {
+  const { stdout } = await execFileAsync("node", [
+    binPath,
+    transcriptPath,
+    diffPath,
+    "--json",
   ]);
   const parsed = JSON.parse(stdout);
 

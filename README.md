@@ -13,9 +13,11 @@ codebase, as opposed to what it said it did.
 This project is built autonomously, one milestone at a time, with each change
 gated on passing automated tests. So far: parsing a transcript into claims
 about which files were touched or fixed, parsing a diff into its actual
-changed hunks, and a first set of deterministic objection rules that flag
-claimed-but-untouched files and unsupported "tests pass" claims. Full
-cross-examination and document generation are not implemented yet.
+changed hunks, a first set of deterministic objection rules that flag
+claimed-but-untouched files and unsupported "tests pass" claims, and a
+deposition template that renders the claims, diff, and objections as a
+courtroom-style Q&A transcript with exhibits. Further objection rules are not
+implemented yet.
 
 ## Install
 
@@ -29,7 +31,7 @@ standard library.
 ## Usage
 
 ```sh
-node bin/deposition.js <transcript-file> <diff-file> [--out <output-file>]
+node bin/deposition.js <transcript-file> <diff-file> [--out <output-file>] [--json]
 ```
 
 - `<transcript-file>` — a JSON Lines (one JSON object per line) agent session
@@ -44,19 +46,22 @@ node bin/deposition.js <transcript-file> <diff-file> [--out <output-file>]
 - `<diff-file>` — unified diff text, e.g. the output of `git diff` or
   `git diff > changes.diff`.
 
-- `--out <file>` — write the JSON result to a file instead of stdout.
+- `--out <file>` — write the result to a file instead of stdout.
 
-The CLI prints a JSON object with three top-level keys:
+- `--json` — print the raw `claims`/`diff`/`objections` data as JSON instead
+  of the deposition transcript.
 
-- `claims` — every claim found in the transcript, either a `tool_call` claim
-  (a file-editing tool invocation, e.g. `Edit`/`Write`) or a `narration` claim
-  (a file mentioned in the agent's own text, paired with the nearest claim
-  verb such as "fixed", "added", or "removed").
-- `diff` — the parsed diff: one entry per file with its status
-  (`added`/`modified`/`deleted`/`renamed`) and its hunks, each hunk broken
-  down into added, removed, and context lines.
-- `objections` — deterministic rule violations found by comparing `claims`
-  against `diff`:
+By default the CLI renders a courtroom-deposition-style Q&A transcript:
+
+- One numbered question-and-answer pair per claim found in the transcript —
+  a `tool_call` claim (a file-editing tool invocation, e.g. `Edit`/`Write`)
+  or a `narration` claim (a file mentioned in the agent's own text, paired
+  with the nearest claim verb such as "fixed", "added", or "removed").
+- An `EXHIBIT` block per file the diff actually changed, quoting its hunks,
+  cross-referenced from any Q&A pair about that file.
+- `OBJECTION` lines placed directly beneath the claim they contradict (or
+  under a trailing `GENERAL OBJECTIONS` section when an objection isn't tied
+  to one specific claim), raised by these deterministic rules:
   - `claimed-untouched-file` — the transcript claims a file was edited,
     written, or deleted (via a tool call or narration with a mutating verb),
     but the diff shows no change to that file at all.
@@ -68,8 +73,11 @@ Example:
 
 ```sh
 git diff > changes.diff
-node bin/deposition.js session.jsonl changes.diff --out claims.json
+node bin/deposition.js session.jsonl changes.diff --out deposition.txt
 ```
+
+Pass `--json` to get the same `claims`, `diff`, and `objections` data as a
+JSON object instead, e.g. for feeding into another tool.
 
 ### Running the tests
 
