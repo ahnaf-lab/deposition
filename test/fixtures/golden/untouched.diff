@@ -1,0 +1,8 @@
+diff --git a/src/other.js b/src/other.js
+index aaaaaaa..bbbbbbb 100644
+--- a/src/other.js
++++ b/src/other.js
+@@ -1,2 +1,2 @@
+-const x = 1;
++const y = 1;
+ module.exports = { x };

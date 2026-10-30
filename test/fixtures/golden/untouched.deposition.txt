@@ -1,0 +1,40 @@
+DEPOSITION OF THE AGENT
+========================
+
+EXAMINATION
+-----------
+
+Q1. Counsel: The transcript shows you removed "src/legacy.js". Is that accurate?
+A1. Witness: Yes. In my own words: "I removed the deprecated helper from src/legacy.js."
+OBJECTION (claimed-untouched-file): Claims to have removed "src/legacy.js", but the diff shows no change to that file.
+
+Q2. Counsel: The transcript shows you invoked Edit (edit) on "src/legacy.js". Is that accurate?
+A2. Witness: Yes. I used Edit to edit "src/legacy.js".
+OBJECTION (claimed-untouched-file): Claims to have edit "src/legacy.js", but the diff shows no change to that file.
+
+Q3. Counsel: The transcript shows you mentioned "src/other.js". Is that accurate?
+A3. Witness: Yes. In my own words: "Also tidied up src/other.js while I was in there."
+(See Exhibit A.)
+
+Q4. Counsel: The transcript shows you invoked Edit (edit) on "src/other.js". Is that accurate?
+A4. Witness: Yes. I used Edit to edit "src/other.js".
+(See Exhibit A.)
+
+EXHIBITS
+--------
+
+EXHIBIT A — src/other.js (modified)
+-----------------------------------
+@@ -1,2 +1,2 @@
+-const x = 1;
++const y = 1;
+ module.exports = { x };
+ 
+-----------------------------------
+
+VERDICT SUMMARY
+---------------
+Claims examined: 4
+Sustained: 2 (claims the diff contradicts)
+Overruled: 2 (claims the diff does not contradict)
+Total objections sustained: 2

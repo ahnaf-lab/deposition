@@ -1,0 +1,38 @@
+DEPOSITION OF THE AGENT
+========================
+
+EXAMINATION
+-----------
+
+Q1. Counsel: The transcript shows you updated "src/config.js". Is that accurate?
+A1. Witness: Yes. In my own words: "I updated src/config.js to bump the timeout."
+(See Exhibit A.)
+
+Q2. Counsel: The transcript shows you invoked Edit (edit) on "src/config.js". Is that accurate?
+A2. Witness: Yes. I used Edit to edit "src/config.js".
+(See Exhibit A.)
+
+EXHIBITS
+--------
+
+EXHIBIT A — src/config.js (modified)
+------------------------------------
+@@ -1,3 +1,3 @@
+ module.exports = {
+-  timeout: 1000,
++  timeout: 5000,
+ };
+ 
+------------------------------------
+
+GENERAL OBJECTIONS
+-------------------
+OBJECTION (unsupported-tests-pass-claim): Claims the tests pass, but no test command was run anywhere in this transcript.
+
+VERDICT SUMMARY
+---------------
+Claims examined: 2
+Sustained: 0 (claims the diff contradicts)
+Overruled: 2 (claims the diff does not contradict)
+Additional objections sustained (not tied to a specific claim): 1
+Total objections sustained: 1

@@ -1,0 +1,33 @@
+DEPOSITION OF THE AGENT
+========================
+
+EXAMINATION
+-----------
+
+Q1. Counsel: The transcript shows you fixed "src/counter.js". Is that accurate?
+A1. Witness: Yes. In my own words: "I fixed the off-by-one bug in src/counter.js."
+(See Exhibit A.)
+
+Q2. Counsel: The transcript shows you invoked Edit (edit) on "src/counter.js". Is that accurate?
+A2. Witness: Yes. I used Edit to edit "src/counter.js".
+(See Exhibit A.)
+
+EXHIBITS
+--------
+
+EXHIBIT A — src/counter.js (modified)
+-------------------------------------
+@@ -1,3 +1,3 @@
+ function count(n) {
+-  for (let i = 0; i <= n; i++) {}
++  for (let i = 0; i < n; i++) {}
+ }
+ 
+-------------------------------------
+
+VERDICT SUMMARY
+---------------
+Claims examined: 2
+Sustained: 0 (claims the diff contradicts)
+Overruled: 2 (claims the diff does not contradict)
+Total objections sustained: 0

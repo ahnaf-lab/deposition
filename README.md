@@ -16,8 +16,11 @@ about which files were touched or fixed, parsing a diff into its actual
 changed hunks, a first set of deterministic objection rules that flag
 claimed-but-untouched files and unsupported "tests pass" claims, a
 deposition template that renders the claims, diff, and objections as a
-courtroom-style Q&A transcript with exhibits, and a closing verdict summary
-tallying how many claims were sustained versus overruled.
+courtroom-style Q&A transcript with exhibits, a closing verdict summary
+tallying how many claims were sustained versus overruled, and a set of golden
+tests that pin the exact rendered deposition markdown for fixture
+transcript+diff pairs covering a clean run, untouched-file objections, and an
+unsupported tests-pass claim.
 
 ## Install
 

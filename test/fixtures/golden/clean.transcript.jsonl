@@ -1,0 +1,5 @@
+{"role": "user", "content": [{"type": "text", "text": "There's an off-by-one bug in the counter. Please fix it."}]}
+{"role": "assistant", "content": [{"type": "text", "text": "I fixed the off-by-one bug in src/counter.js."}, {"type": "tool_use", "id": "1", "name": "Edit", "input": {"file_path": "src/counter.js", "old_string": "i <= n", "new_string": "i < n"}}]}
+{"role": "assistant", "content": [{"type": "tool_use", "id": "2", "name": "Bash", "input": {"command": "npm test"}}]}
+{"role": "tool", "content": [{"type": "tool_result", "tool_use_id": "2", "content": "3 passing"}]}
+{"role": "assistant", "content": [{"type": "text", "text": "All tests pass now."}]}

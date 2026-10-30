@@ -1,0 +1,9 @@
+diff --git a/src/config.js b/src/config.js
+index 9999999..8888888 100644
+--- a/src/config.js
++++ b/src/config.js
+@@ -1,3 +1,3 @@
+ module.exports = {
+-  timeout: 1000,
++  timeout: 5000,
+ };
